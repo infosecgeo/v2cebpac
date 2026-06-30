@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "updatedAt": "2026-06-30T13:00:00.000Z",
+  "updatedBy": "system",
+  "runtime": {
+    "apiKey": "",
+    "baseURL": "https://www.cebupacificair.com",
+    "soarURL": "https://soar.cebupacificair.com",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36",
+    "secChUa": "\"Google Chrome\";v=\"137\", \"Chromium\";v=\"137\", \"Not/A)Brand\";v=\"24\"",
+    "acceptLang": "en-US,en;q=0.9"
+  },
+  "proxy": {
+    "primary": "",
+    "pool": [],
+    "rotationStrategy": "random"
+  },
+  "processing": {
+    "retryCount": 10,
+    "retryDelay": 2000,
+    "requestTimeout": 30000,
+    "workerCount": 5,
+    "exponentialBackoff": true,
+    "jitterMs": 500
+  },
+  "modes": {
+    "automatic": true,
+    "manual": true,
+    "maintenance": false
+  },
+  "payment": {
+    "qrCodeUrl": "",
+    "topupInstructions": "Please send payment via GCash/PayMaya and submit receipt through Telegram bot."
+  }
+}
