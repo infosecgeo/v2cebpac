@@ -81,6 +81,23 @@
             color: var(--text-muted);
         }
         
+        .logout-btn {
+            margin-left: 8px;
+            padding: 6px 14px;
+            background: var(--error);
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        
+        .logout-btn:hover {
+            opacity: 0.8;
+        }
+        
         .status-indicator {
             width: 8px;
             height: 8px;
@@ -335,6 +352,7 @@
             <div class="header-user">
                 <span class="status-indicator"></span>
                 <span id="admin-name">Admin</span>
+                <button class="logout-btn" onclick="logout()">Logout</button>
             </div>
         </div>
 
@@ -559,10 +577,64 @@
         // Check authentication
         function checkAuth() {
             const token = localStorage.getItem('adminToken');
+            const adminUser = localStorage.getItem('adminUser');
+            
             if (!token) {
-                // Redirect to login if needed
-                console.warn('No admin token found');
-                // window.location.href = '/admin/login.html';
+                // Redirect to login page
+                window.location.href = '/admin/login.html';
+                return;
+            }
+            
+            // Verify token with backend
+            fetch('/api/admin/', {
+                headers: {
+                    'Authorization': `******
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Invalid token');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success && data.data.admin) {
+                    // Update admin name display
+                    const adminName = document.getElementById('admin-name');
+                    if (adminName) {
+                        adminName.textContent = data.data.admin.username;
+                    }
+                } else {
+                    throw new Error('Invalid response');
+                }
+            })
+            .catch(error => {
+                console.error('Auth check failed:', error);
+                localStorage.removeItem('adminToken');
+                localStorage.removeItem('adminUser');
+                window.location.href = '/admin/login.html';
+            });
+            
+            // Set admin name from local storage initially
+            if (adminUser) {
+                try {
+                    const user = JSON.parse(adminUser);
+                    const adminName = document.getElementById('admin-name');
+                    if (adminName && user.username) {
+                        adminName.textContent = user.username;
+                    }
+                } catch (e) {
+                    console.error('Failed to parse admin user', e);
+                }
+            }
+        }
+        
+        // Logout function
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('adminToken');
+                localStorage.removeItem('adminUser');
+                window.location.href = '/admin/login.html';
             }
         }
 
