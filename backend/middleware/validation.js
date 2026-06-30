@@ -71,20 +71,18 @@ const schemas = {
   
   // Transaction complete validation
   transactionComplete: Joi.object({
-    transactionId: Joi.string().uuid().required(),
-    status: Joi.string().valid('success', 'failed', 'pending').required(),
-    recordLocator: Joi.string().optional(),
-    email: Joi.string().email().optional(),
-    amount: Joi.number().positive().optional(),
-    passengers: Joi.array().items(Joi.string()).optional(),
-    itinerary: Joi.string().optional(),
+    success: Joi.boolean().required(),
+    cardNumber: Joi.string().optional(),
+    amount: Joi.number().positive().optional().allow(null),
+    message: Joi.string().optional(),
     metadata: Joi.object().optional(),
   }),
   
   // Credit top-up request validation
   topupRequest: Joi.object({
     amount: Joi.number().integer().min(1).required(),
-    receiptFileId: Joi.string().required(),
+    paymentMethod: Joi.string().required(),
+    paymentReference: Joi.string().optional(),
   }),
   
   // License generation validation
