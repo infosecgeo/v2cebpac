@@ -51,8 +51,18 @@ app.get('/health', (req, res) => {
   });
 });
 
+// Serve root index.html
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'index.html'));
+});
+
 // Serve admin dashboard static files
 app.use('/admin', express.static(path.join(__dirname, 'public', 'admin')));
+
+// Admin dashboard root route (fallback for /admin without trailing slash)
+app.get('/admin', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'admin', 'index.html'));
+});
 
 // API routes
 app.use('/api', apiLimiter, apiRoutes);
