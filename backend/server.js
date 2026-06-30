@@ -6,6 +6,7 @@ const path = require('path');
 const cors = require('cors');
 const helmet = require('helmet');
 const compression = require('compression');
+const axios = require('axios');
 
 const config = require('./config');
 const logger = require('./utils/logger');
@@ -51,8 +52,53 @@ app.get('/health', (req, res) => {
   });
 });
 
+// Serve root index.html
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'index.html'));
+});
+
+// Proxy payment requests to Go server
+app.post('/pay', express.raw({ type: '*/*', limit: '10mb' }), async (req, res) => {
+  try {
+    logger.info('Proxying payment request to Go server');
+    
+    // Forward the request to the Go payment processor
+    const response = await axios({
+      method: 'POST',
+      url: `${config.PAYMENT_PROCESSOR_URL}/pay`,
+      data: req.body,
+      headers: {
+        'Content-Type': req.headers['content-type'] || 'application/x-www-form-urlencoded',
+      },
+      maxRedirects: 0,
+      validateStatus: () => true, // Accept any status code
+    });
+    
+    // Forward the response back to the client
+    res.status(response.status);
+    Object.keys(response.headers).forEach(key => {
+      if (key.toLowerCase() !== 'transfer-encoding') {
+        res.set(key, response.headers[key]);
+      }
+    });
+    res.send(response.data);
+  } catch (error) {
+    logger.error('Payment proxy error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'PAYMENT_PROXY_ERROR',
+      message: 'Failed to process payment request',
+    });
+  }
+});
+
 // Serve admin dashboard static files
 app.use('/admin', express.static(path.join(__dirname, 'public', 'admin')));
+
+// Admin dashboard root route (fallback for /admin without trailing slash)
+app.get('/admin', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'admin', 'index.html'));
+});
 
 // API routes
 app.use('/api', apiLimiter, apiRoutes);
