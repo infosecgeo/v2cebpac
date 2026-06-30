@@ -171,7 +171,7 @@ The payment form is **disabled** until the user logs in. This ensures:
 
 - `GET /api/admin/*` - Requires admin token in header:
   ```
-  Authorization: ****** <token>
+  Authorization: ******
   ```
 
 ### User Endpoints
@@ -185,7 +185,7 @@ The payment form is **disabled** until the user logs in. This ensures:
 
 - `GET /api/auth/validate` - Validate user token
   ```
-  Authorization: ****** <token>
+  Authorization: ******
   ```
 
 ## Troubleshooting

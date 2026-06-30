@@ -588,7 +588,7 @@
             // Verify token with backend
             fetch('/api/admin/', {
                 headers: {
-                    'Authorization': `******
+                    'Authorization': 'Bearer ' + token
                 }
             })
             .then(response => {
