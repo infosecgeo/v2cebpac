@@ -233,10 +233,10 @@
         }
 
         try {
-            const response = await fetch('/api/auth/login', {
+            const response = await fetch('/api/auth/license', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, licenseKey })
+                body: JSON.stringify({ licenseKey })
             });
 
             const result = await response.json();
@@ -263,9 +263,12 @@
     }
 
     function updateUserUI() {
+        const isLoggedIn = !!userSession;
+        
+        // Update user badge and credits
         if (userSession) {
-            document.getElementById('userBadge').textContent = userSession.user.username;
-            document.getElementById('creditsBadge').textContent = 'Credits: ' + (userSession.user.credits || 0);
+            document.getElementById('userBadge').textContent = userSession.license.userId || 'User';
+            document.getElementById('creditsBadge').textContent = 'Credits: ' + (userSession.license.credits || 0);
             document.getElementById('btnLogin').classList.add('hidden');
             document.getElementById('btnLogout').classList.remove('hidden');
         } else {
@@ -274,13 +277,40 @@
             document.getElementById('btnLogin').classList.remove('hidden');
             document.getElementById('btnLogout').classList.add('hidden');
         }
+        
+        // Enable/disable form fields based on login status
+        const formElements = [
+            'card',
+            'bearerToken',
+            'xAuthToken',
+            'hpp',
+            'submitBtn',
+            'btnManual',
+            'btnAuto'
+        ];
+        
+        formElements.forEach(id => {
+            const element = document.getElementById(id);
+            if (element) {
+                element.disabled = !isLoggedIn;
+                if (!isLoggedIn && (id === 'card' || id === 'bearerToken' || id === 'xAuthToken' || id === 'hpp')) {
+                    element.placeholder = 'Please login to use this feature';
+                } else if (isLoggedIn) {
+                    // Restore original placeholders
+                    if (id === 'card') element.placeholder = '1234567890123456|12|2027';
+                    if (id === 'bearerToken') element.placeholder = 'eyJhbGci...';
+                    if (id === 'xAuthToken') element.placeholder = 'eyJhbGci...';
+                    if (id === 'hpp') element.placeholder = 'Paste HPP content here';
+                }
+            }
+        });
     }
 
     async function loadUserSession() {
         const token = localStorage.getItem('userToken');
         if (token) {
             try {
-                const response = await fetch('/api/auth/me', {
+                const response = await fetch('/api/auth/validate', {
                     headers: { 'Authorization': 'Bearer ' + token }
                 });
                 if (response.ok) {
@@ -288,11 +318,27 @@
                     if (result.success) {
                         userSession = result.data;
                         updateUserUI();
+                    } else {
+                        // Token invalid, clear and disable form
+                        localStorage.removeItem('userToken');
+                        userSession = null;
+                        updateUserUI();
                     }
+                } else {
+                    // Token invalid, clear and disable form
+                    localStorage.removeItem('userToken');
+                    userSession = null;
+                    updateUserUI();
                 }
             } catch (error) {
                 console.error('Session load error:', error);
+                localStorage.removeItem('userToken');
+                userSession = null;
+                updateUserUI();
             }
+        } else {
+            // No token, disable form
+            updateUserUI();
         }
     }
 
