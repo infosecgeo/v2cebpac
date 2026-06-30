@@ -61,7 +61,7 @@ async function main() {
     logger.info('');
     logger.info('Default Admin Credentials:');
     logger.info(`  Username: ${process.env.ADMIN_USERNAME || 'admin'}`);
-    logger.info(`  Password: ${process.env.ADMIN_PASSWORD || 'admin123'}`);
+    logger.info(`  Password: ********`);
     logger.info('');
     logger.info('⚠️  IMPORTANT: Change the default admin password immediately!');
     logger.info('');
