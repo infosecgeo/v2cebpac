@@ -137,7 +137,7 @@ class DatabaseInitializer {
    */
   async _initCredits() {
     return {
-      credits: [],
+      entries: [],
     };
   }
 

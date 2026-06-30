@@ -137,7 +137,11 @@ class CreditService {
    */
   async getBalance(licenseId) {
     try {
-      const entries = await this.getByLicense(licenseId, { limit: null });
+      const entries = await this.getByLicense(licenseId, {
+        limit: 1,
+        sortBy: 'createdAt',
+        sortOrder: 'desc',
+      });
       if (entries.length === 0) {
         return 0;
       }
