@@ -51,6 +51,9 @@ module.exports = {
   CORS_ORIGIN: process.env.CORS_ORIGIN || '*',
   CORS_CREDENTIALS: process.env.CORS_CREDENTIALS !== 'false',
 
+  // Payment Processor (Go Server)
+  PAYMENT_PROCESSOR_URL: process.env.PAYMENT_PROCESSOR_URL || 'http://localhost:5000',
+
   // Paths
   DB_PATH: path.resolve(__dirname, '..', process.env.DB_PATH || './storage/db'),
   BACKUP_PATH: path.resolve(__dirname, '..', process.env.BACKUP_PATH || './storage/backups'),
